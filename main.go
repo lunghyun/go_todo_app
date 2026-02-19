@@ -10,6 +10,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+func main() {
+	if err := run(context.Background()); err != nil {
+		log.Printf("failed to terminate server: %v", err)
+	}
+}
+
 func run(ctx context.Context) error {
 	s := &http.Server{
 		Addr: ":8080",
@@ -38,10 +44,4 @@ func run(ctx context.Context) error {
 
 	// Go 메서드로 실행한 다른 goroutine의 종료를 기다림
 	return eg.Wait()
-}
-
-func main() {
-	if err := run(context.Background()); err != nil {
-		log.Printf("failed to terminate server: %v", err)
-	}
 }
