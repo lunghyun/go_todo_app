@@ -26,7 +26,7 @@ Web GUI 화면은 만들지 않거나, AI를 통해 생성할 예정
 ## 5. 시스템 구성
 API 서버에서 자주 사용되는 RDBMS와 인메모리 데이터베이스 구성을 기반으로 한 간단한 REST API
 
-![go_todo_app.drawio.png](go_todo_app.drawio.png)
+![go_todo_app.drawio.png](img/go_todo_app.drawio.png)
 
 ##  6. 사용 패키지 선정 방침
 1. 표준에 준하도록 선정
