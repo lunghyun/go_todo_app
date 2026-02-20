@@ -5,31 +5,42 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"os"
 
 	"golang.org/x/sync/errgroup"
 )
 
 func main() {
-	if err := run(context.Background()); err != nil {
+	if len(os.Args) != 2 {
+		fmt.Printf("need Port number\n")
+		os.Exit(1)
+	}
+	p := os.Args[1]
+	l, err := net.Listen("tcp", ":"+p)
+	if err != nil {
+		log.Fatalf("failed to listen on port %s: %v", p, err)
+	}
+	if err = run(context.Background(), l); err != nil {
 		log.Printf("failed to terminate server: %v", err)
+		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context) error {
+func run(ctx context.Context, l net.Listener) error {
 	s := &http.Server{
-		Addr: ":8080",
+		// 인수로 받은 net.Listener를 이용하므로 Addr 필드는 지정하지 않는다.
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = fmt.Fprintf(w, "Hello, %s", r.URL.Path[1:])
 		}),
 	}
 
 	eg, ctx := errgroup.WithContext(ctx)
-	// 다른 고루틴에서 HTTP 서버를 실행
 	eg.Go(func() error {
-		// http.ErrServerClosed:
-		// Shutdown이 정상 종료된 것을 나타내므로 이상 처리가 아님
-		if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		// ListenAndServe -> Serve로 변경
+		// http.ErrServerClosed는 httpServerShutdown이 정상 종료되었다고 표시하므로 문제없음
+		if err := s.Serve(l); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("failed to close: %+v", err)
 			return err
 		}
