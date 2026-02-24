@@ -17,7 +17,6 @@ linters:
       locale: US
   enable:
     - unused
-    - deadcode
     - errcheck
     - gocognit
     - gocyclo
