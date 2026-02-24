@@ -20,7 +20,7 @@ logs: ## 도커 구성기 로그 출력
 	docker compose logs -f
 
 ps: ## 컨테이너 상태 확인
-	docker compose ps
+	docker compose ps -a
 
 test: ## 테스트 실행
 	go test -race -shuffle=on ./...
