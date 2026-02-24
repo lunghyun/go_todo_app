@@ -1,6 +1,6 @@
 # TODO API 서버
 ## 1. 개요
-인증 기능이 있는 ToDo 목록 관리 하는 API 서버
+인증 기능이 있는 TODO 목록 관리 하는 API 서버
 
 ## 2. EndPoint 목록
 
