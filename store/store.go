@@ -31,7 +31,7 @@ func (ts *TaskStore) Get(id entity.TaskID) (*entity.Task, error) {
 	return nil, ErrNotFound
 }
 
-func (ts *TaskStore) All(id entity.TaskID) entity.Tasks {
+func (ts *TaskStore) All() entity.Tasks {
 	tasks := make([]*entity.Task, len(ts.Tasks))
 	for i, t := range ts.Tasks {
 		tasks[i-1] = t
