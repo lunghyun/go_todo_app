@@ -28,3 +28,7 @@ test: ## 테스트 실행
 help: ## 옵션 보기
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+cov: ## 테스트 실행으로 커버리지 데이터 저장
+	go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out -o coverage.html
+
