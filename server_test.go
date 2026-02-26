@@ -38,7 +38,7 @@ func TestServer_Run(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to GET: %+v", err)
 	}
-	defer rsp.Body.Close()
+	defer func() { _ = rsp.Body.Close() }()
 	got, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		t.Fatalf("failed to read body: %v", err)
