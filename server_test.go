@@ -11,9 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func TestRun(t *testing.T) {
-	t.Skip("리팩터링 중...")
-
+func TestServer_Run(t *testing.T) {
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("failed to listen on port %v", err)
@@ -23,8 +21,13 @@ func TestRun(t *testing.T) {
 
 	//- 다른 고루틴에서 테스트 대상인 run을 실행, HTTP 서버를 시작
 	eg, ctx := errgroup.WithContext(ctx)
+	mux := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = fmt.Fprintf(w, "Hello, %s", r.URL.Path[1:])
+	})
+
 	eg.Go(func() error {
-		return run(ctx)
+		s := NewServer(l, mux)
+		return s.Run(ctx)
 	})
 
 	//- 엔드포인트에 대해 GET 요청 전송
@@ -35,7 +38,7 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to GET: %+v", err)
 	}
-	defer rsp.Body.Close()
+	defer func() { _ = rsp.Body.Close() }()
 	got, err := io.ReadAll(rsp.Body)
 	if err != nil {
 		t.Fatalf("failed to read body: %v", err)
