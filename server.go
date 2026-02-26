@@ -28,17 +28,6 @@ func NewServer(l net.Listener, mux http.Handler) *Server {
 func (s *Server) Run(ctx context.Context) error {
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	//cfg, err := config.New()
-	//l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
-	//url := fmt.Sprintf("http://%s", l.Addr().String())
-	//log.Printf("start with: %v", url)
-	//s := &http.Server{
-	//	// 인수로 받은 net.Listener를 이용하므로 Addr 필드는 지정하지 않는다.
-	//	Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	//		// 명령줄에서 테스트하기 위한 로직
-	//		_, _ = fmt.Fprintf(w, "Hello, %s", r.URL.Path[1:])
-	//	}),
-	//}
 
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
