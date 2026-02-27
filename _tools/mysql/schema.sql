@@ -17,5 +17,5 @@ CREATE TABLE `task`
     `status`   VARCHAR(20)  NOT NULL COMMENT '작업 상태',
     `created`  DATETIME(6) NOT NULL COMMENT '레코드 작성 시간',
     `modified` DATETIME(6) NOT NULL COMMENT '레코드 수정 시간',
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`)
 ) Engine=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='작업';
