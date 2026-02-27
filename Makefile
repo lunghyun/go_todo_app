@@ -32,6 +32,11 @@ help: ## 옵션 보기
 cov: ## 테스트 실행으로 커버리지 데이터 저장
 	go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out -o coverage.html
 
+include .env
+
+migrate: ## exec: go install github.com/sqldef/sqldef/cmd/mysqldef@latest
+	mysqldef -u $(TODO_DB_USER) -p $(TODO_DB_PASSWORD) -h 127.0.0.1 -P 33306 $(TODO_DB_NAME) < ./_tools/mysql/schema.sql
+
 get-health:
 	curl -i -XGET localhost:18000/health
 
@@ -43,3 +48,4 @@ post-ok-tasks:
 
 post-bad-tasks:
 	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/bad_req.json.golden
+
