@@ -37,7 +37,7 @@ include .env
 migrate: ## exec: go install github.com/sqldef/sqldef/cmd/mysqldef@latest
 	mysqldef -u $(TODO_DB_USER) -p $(TODO_DB_PASSWORD) -h 127.0.0.1 -P 33306 $(TODO_DB_NAME) < ./_tools/mysql/schema.sql
 
-migrate:
+dry-migrate:
 	mysqldef -u $(TODO_DB_USER) -p $(TODO_DB_PASSWORD) -h 127.0.0.1 -P 33306 $(TODO_DB_NAME) --dry-run < ./_tools/mysql/schema.sql
 
 get-health:
