@@ -41,5 +41,5 @@ get-tasks:
 post-ok-tasks:
 	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
 
-post-ok-tasks:
+post-bad-tasks:
 	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/bad_req.json.golden
