@@ -32,3 +32,14 @@ help: ## 옵션 보기
 cov: ## 테스트 실행으로 커버리지 데이터 저장
 	go test ./... -coverprofile=coverage.out && go tool cover -html=coverage.out -o coverage.html
 
+get-health:
+	curl -i -XGET localhost:18000/health
+
+get-tasks:
+	curl -i -XGET localhost:18000/tasks
+
+post-ok-tasks:
+	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/ok_req.json.golden
+
+post-ok-tasks:
+	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/bad_req.json.golden
