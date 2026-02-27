@@ -5,9 +5,30 @@ services:
       args:
         - target=dev
     environment:
-      TODO_ENV: dev
-      PORT: 8080
+      TODO_ENV: ${TODO_ENV}
+      PORT: ${PORT}
+      TODO_DB_HOST: ${TODO_DB_HOST}
+      TODO_DB_PORT: ${TODO_DB_PORT}
+      TODO_DB_USER: ${TODO_DB_USER}
+      TODO_DB_PASSWORD: ${TODO_DB_PASSWORD}
+      TODO_DB_NAME: ${TODO_DB_NAME}
     volumes:
       - .:/app
     ports:
-      - "18000:8080"
+      - "18000:${PORT}"
+  todo-db:
+    image: mysql:8.0.29
+    platform: linux/amd64
+    container_name: todo-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: ${MYSQL_ALLOW_EMPTY_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - todo-db-data:/var/lib/mysql
+      - $PWD/_todos/mysql/conf.d:/etc/mysql/conf.d:cached
+    ports:
+      - "33306:${TODO_DB_PORT}"
+volumes:
+  todo-db-data:
