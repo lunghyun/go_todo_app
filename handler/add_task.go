@@ -5,14 +5,11 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator"
-	"github.com/jmoiron/sqlx"
 	"github.com/lunghyun/go_todo_app/entity"
-	"github.com/lunghyun/go_todo_app/store"
 )
 
 type AddTask struct {
-	DB        *sqlx.DB
-	Repo      *store.Repository
+	Service   AddTaskService
 	Validator *validator.Validate
 }
 
@@ -33,12 +30,8 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}, http.StatusBadRequest)
 		return
 	}
-
-	t := &entity.Task{
-		Title:  b.Title,
-		Status: entity.TaskStatusTodo,
-	}
-	if err := at.Repo.AddTask(ctx, at.DB, t); err != nil {
+	t, err := at.Service.AddTask(ctx, b.Title)
+	if err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
 		}, http.StatusInternalServerError)
