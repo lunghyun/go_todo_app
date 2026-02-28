@@ -12,7 +12,7 @@ import (
 
 func OpenDBForTest(t *testing.T) *sqlx.DB {
 	port := 33306
-	if _, defined := os.LookupEnv("PORT"); defined {
+	if _, defined := os.LookupEnv("CI"); defined {
 		port = 3306
 	}
 	db, err := sql.Open(
