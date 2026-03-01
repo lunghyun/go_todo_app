@@ -64,7 +64,7 @@ func TestListTask(t *testing.T) {
 
 			moq := &ListTasksServiceMock{}
 			moq.ListTasksFunc = func(ctx context.Context) (entity.Tasks, error) {
-				if tt.tasks != nil {
+				if tt.err != nil {
 					return nil, tt.err
 				}
 				return tt.tasks, nil
