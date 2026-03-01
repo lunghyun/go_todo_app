@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -32,8 +33,9 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	t, err := at.Service.AddTask(ctx, b.Title)
 	if err != nil {
+		log.Printf("AddTask failed: %+v ", err)
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
+			Message: http.StatusText(http.StatusInternalServerError),
 		}, http.StatusInternalServerError)
 		return
 	}

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/lunghyun/go_todo_app/entity"
@@ -20,8 +21,9 @@ func (lt *ListTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	tasks, err := lt.Service.ListTasks(ctx)
 	if err != nil {
+		log.Printf("ListTask failed: %+v ", err)
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
+			Message: http.StatusText(http.StatusInternalServerError),
 		}, http.StatusInternalServerError)
 		return
 	}

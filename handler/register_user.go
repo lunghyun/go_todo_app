@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -34,8 +35,9 @@ func (ru *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := ru.Service.RegisterUser(ctx, body.Name, body.Password, body.Role)
 	if err != nil {
+		log.Printf("RegisterUser failed: %+v ", err)
 		RespondJSON(ctx, w, &ErrResponse{
-			Message: err.Error(),
+			Message: http.StatusText(http.StatusInternalServerError),
 		}, http.StatusInternalServerError)
 		return
 	}
