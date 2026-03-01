@@ -39,6 +39,7 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}, http.StatusInternalServerError)
 		return
 	}
+
 	res := struct {
 		ID entity.TaskID `json:"id"`
 	}{ID: t.ID}
