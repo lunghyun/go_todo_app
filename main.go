@@ -33,7 +33,7 @@ func run(ctx context.Context) error {
 	// 오류 반환되어도 cleanup
 	defer cleanup()
 	if err != nil {
-		return fmt.Errorf("NewMux failed: %v", err)
+		return fmt.Errorf("NewMux failed: %w", err)
 	}
 	s := NewServer(l, mux)
 	return s.Run(ctx)
