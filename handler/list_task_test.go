@@ -35,14 +35,14 @@ func TestListTask(t *testing.T) {
 			},
 			want: want{
 				status:  http.StatusOK,
-				rspFile: "testdata/list_task/ok_rsp.json.golden",
+				rspFile: "testdata/list_task/ok_res.json.golden",
 			},
 		},
 		"empty": {
 			tasks: []*entity.Task{},
 			want: want{
 				status:  http.StatusOK,
-				rspFile: "testdata/list_task/empty_rsp.json.golden",
+				rspFile: "testdata/list_task/empty_res.json.golden",
 			},
 		},
 	}
