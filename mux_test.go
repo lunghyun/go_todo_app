@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/lunghyun/go_todo_app/config"
@@ -13,6 +14,9 @@ import (
 func TestNewMux(t *testing.T) {
 	// 1. 서버 셋업
 	ctx := context.Background()
+	if _, defined := os.LookupEnv("CI"); defined {
+		t.Setenv("TODO_DB_PORT", "3306")
+	}
 	cfg, err := config.New()
 	if err != nil {
 		t.Fatalf("failed to create config: %v", err)
