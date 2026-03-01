@@ -17,7 +17,7 @@ type RegisterUser struct {
 func (r *RegisterUser) RegisterUser(ctx context.Context, name, password, role string) (*entity.User, error) {
 	pw, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, fmt.Errorf("cannot hash password: %v", err)
+		return nil, fmt.Errorf("cannot hash password: %w", err)
 	}
 
 	u := &entity.User{
@@ -26,7 +26,7 @@ func (r *RegisterUser) RegisterUser(ctx context.Context, name, password, role st
 		Role:     role,
 	}
 	if err = r.Repo.RegisterUser(ctx, r.DB, u); err != nil {
-		return nil, fmt.Errorf("failed to register: %v", err)
+		return nil, fmt.Errorf("failed to register: %w", err)
 	}
 	return u, nil
 }
