@@ -18,6 +18,7 @@ func TestListTask(t *testing.T) {
 	}
 	tests := map[string]struct {
 		tasks []*entity.Task
+		err   error
 		want  want
 	}{
 		"ok": {
@@ -43,6 +44,13 @@ func TestListTask(t *testing.T) {
 			want: want{
 				status:  http.StatusOK,
 				rspFile: "testdata/list_task/empty_res.json.golden",
+			},
+		},
+		"nil": {
+			err: errors.New("tasks not found: nil"),
+			want: want{
+				status:  http.StatusInternalServerError,
+				rspFile: "testdata/list_task/nil_res.json.golden",
 			},
 		},
 	}
