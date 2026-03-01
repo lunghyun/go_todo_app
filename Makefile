@@ -55,3 +55,5 @@ post-ok-tasks:
 post-bad-tasks:
 	curl -i -XPOST localhost:18000/tasks -d @./handler/testdata/add_task/bad_req.json.golden
 
+post-ok-register-user:
+	curl -X POST localhost:18000/register -d '{"name": "john2", "password": "test", "role":"user"}'
