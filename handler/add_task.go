@@ -21,7 +21,7 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&b); err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		}, http.StatusBadRequest)
 		return
 	}
 	if err := at.Validator.Struct(b); err != nil {

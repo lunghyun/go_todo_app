@@ -23,7 +23,7 @@ func (ru *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: err.Error(),
-		}, http.StatusInternalServerError)
+		}, http.StatusBadRequest)
 		return
 	}
 	if err := ru.Validator.Struct(body); err != nil {
