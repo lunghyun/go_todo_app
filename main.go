@@ -17,6 +17,12 @@ func main() {
 	}
 }
 
+// run starts the server: it loads configuration, opens a TCP listener, builds a request mux, and runs the server.
+//
+// If configuration creation fails, the error is returned. If the listener cannot be created the process exits
+// after logging a fatal message. Resources produced by NewMux are released via the deferred cleanup even if
+// NewMux returns an error; however, a NewMux error is not propagated. Any error returned by the server's Run
+// is returned to the caller.
 func run(ctx context.Context) error {
 	cfg, err := config.New()
 	if err != nil {
@@ -29,7 +35,12 @@ func run(ctx context.Context) error {
 	url := fmt.Sprintf("http://%s", l.Addr().String())
 	log.Printf("start with: %v", url)
 
-	mux := NewMux()
+	mux, cleanup, err := NewMux(ctx, cfg)
+	// 오류 반환되어도 cleanup
+	defer cleanup()
+	if err != nil {
+		_ = fmt.Errorf("NewMux failed: %v", err)
+	}
 	s := NewServer(l, mux)
 	return s.Run(ctx)
 }
