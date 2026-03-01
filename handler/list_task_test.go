@@ -65,9 +65,9 @@ func TestListTask(t *testing.T) {
 			moq := &ListTasksServiceMock{}
 			moq.ListTasksFunc = func(ctx context.Context) (entity.Tasks, error) {
 				if tt.tasks != nil {
-					return tt.tasks, nil
+					return nil, tt.err
 				}
-				return nil, errors.New("error from mock")
+				return tt.tasks, nil
 			}
 			sut := ListTask{Service: moq}
 			sut.ServeHTTP(w, r)
