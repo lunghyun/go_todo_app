@@ -1,14 +1,14 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/lunghyun/go_todo_app/entity"
-	"github.com/lunghyun/go_todo_app/store"
 )
 
 type ListTask struct {
-	Store *store.TaskStore
+	Service ListTasksService
 }
 
 type task struct {
@@ -19,7 +19,14 @@ type task struct {
 
 func (lt *ListTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	tasks := lt.Store.All()
+	tasks, err := lt.Service.ListTasks(ctx)
+	if err != nil {
+		log.Printf("ListTask failed: %+v ", err)
+		RespondJSON(ctx, w, &ErrResponse{
+			Message: http.StatusText(http.StatusInternalServerError),
+		}, http.StatusInternalServerError)
+		return
+	}
 	res := make([]task, 0, len(tasks))
 	for _, t := range tasks {
 		res = append(res, task{
