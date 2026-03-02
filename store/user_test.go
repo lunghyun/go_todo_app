@@ -48,7 +48,6 @@ func TestRepository_RegisterUser(t *testing.T) {
 	}
 }
 
-// TODO: RegisterUser: err case
 func TestRepository_RegisterUser_DuplicateEntry(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
