@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/lunghyun/go_todo_app/clock"
 	"github.com/lunghyun/go_todo_app/entity"
@@ -50,6 +51,34 @@ func TestRepository_RegisterUser(t *testing.T) {
 // TODO: RegisterUser: err case
 func TestRepository_RegisterUser_DuplicateEntry(t *testing.T) {
 	t.Parallel()
+	ctx := context.Background()
+	c := clock.FixedClocker{}
+	errUser := &entity.User{
+		Name:     "errMello",
+		Password: "password",
+		Role:     "User",
+		Created:  c.Now(),
+		Modified: c.Now(),
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
+
+	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
+	mock.ExpectExec(regexp.QuoteMeta(sql)).
+		WithArgs(errUser.Name, errUser.Password, errUser.Role, errUser.Created, errUser.Modified).
+		WillReturnError(&mysql.MySQLError{Number: ErrCodeMySQLDuplicateEntry})
+
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{Clocker: c}
+
+	err = r.RegisterUser(ctx, xdb, errUser)
+	if !errors.Is(err, ErrAlreadyEntry) {
+		t.Errorf("want ErrAlreadyEntry, but got %v", err)
+	}
 }
 
 func TestRepository_RegisterUser_Exec(t *testing.T) {
