@@ -37,7 +37,6 @@ func (ru *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := ru.Service.RegisterUser(ctx, body.Name, body.Password, body.Role)
 	if errors.Is(err, store.ErrAlreadyEntry) {
-		log.Printf("RegisterUser failed: %+v ", err)
 		RespondJSON(ctx, w, &ErrResponse{
 			Message: http.StatusText(http.StatusConflict),
 		}, http.StatusConflict)
