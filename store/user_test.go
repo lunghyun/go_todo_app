@@ -107,7 +107,7 @@ func TestRepository_RegisterUser_Exec(t *testing.T) {
 	r := &Repository{Clocker: c}
 
 	if err = r.RegisterUser(ctx, xdb, errUser); err == nil {
-		t.Error("want no error, but got nil")
+		t.Error("want error, but got nil")
 	}
 }
 
@@ -138,6 +138,6 @@ func TestRepository_RegisterUser_LastInsert(t *testing.T) {
 	r := &Repository{Clocker: c}
 
 	if err = r.RegisterUser(ctx, xdb, errUser); err == nil {
-		t.Error("want no error, but got nil")
+		t.Error("want error, but got nil")
 	}
 }
