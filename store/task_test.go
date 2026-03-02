@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"errors"
+	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -35,9 +36,25 @@ func TestRepository_ListTasks(t *testing.T) {
 	}
 }
 
-// TODO: ListTasks: err case
 func TestRepository_ListTasks_Select(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
 
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
+
+	sql := `SELECT id, title, status, created, modified FROM task`
+	mock.ExpectQuery(regexp.QuoteMeta(sql)).
+		WillReturnError(errors.New("select error"))
+
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{}
+	if _, err = r.ListTasks(ctx, xdb); err == nil {
+		t.Error("want error, got nil")
+	}
 }
 
 func TestRepository_AddTask(t *testing.T) {
@@ -59,8 +76,9 @@ func TestRepository_AddTask(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = db.Close() })
 
-	mock.ExpectExec( // 이스케이프 필요
-		`INSERT INTO task \(title, status, created, modified\) VALUES \(\?, \?, \?, \?\)`,
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
 	).WithArgs(okTask.Title, okTask.Status, okTask.Created, okTask.Modified).
 		WillReturnResult(sqlmock.NewResult(wantID, 1))
 
@@ -91,8 +109,10 @@ func TestRepository_AddTask_Exec(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = db.Close() })
-	mock.ExpectExec( // 이스케이프 필요
-		`INSERT INTO task \(title, status, created, modified\) VALUES \(\?, \?, \?, \?\)`,
+
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
 	).WithArgs(errTask.Title, errTask.Status, errTask.Created, errTask.Modified).
 		WillReturnError(errors.New("db task"))
 
@@ -121,8 +141,9 @@ func TestRepository_AddTask_LastInsert(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = db.Close() })
 
-	mock.ExpectExec( // 이스케이프 필요
-		`INSERT INTO task \(title, status, created, modified\) VALUES \(\?, \?, \?, \?\)`,
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
 	).WithArgs(errTask.Title, errTask.Status, errTask.Created, errTask.Modified).
 		WillReturnResult(sqlmock.NewErrorResult(errors.New("last insert id error")))
 
