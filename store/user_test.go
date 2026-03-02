@@ -30,7 +30,12 @@ func TestRepository_RegisterUser(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
 	mock.ExpectExec(regexp.QuoteMeta(sql)).
@@ -64,7 +69,12 @@ func TestRepository_RegisterUser_DuplicateEntry(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
 	mock.ExpectExec(regexp.QuoteMeta(sql)).
@@ -96,7 +106,12 @@ func TestRepository_RegisterUser_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
 	mock.ExpectExec(regexp.QuoteMeta(sql)).
@@ -127,7 +142,12 @@ func TestRepository_RegisterUser_LastInsert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
 	mock.ExpectExec(regexp.QuoteMeta(sql)).

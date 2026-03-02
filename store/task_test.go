@@ -44,7 +44,12 @@ func TestRepository_ListTasks_Select(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `SELECT id, title, status, created, modified FROM task`
 	mock.ExpectQuery(regexp.QuoteMeta(sql)).
@@ -74,7 +79,12 @@ func TestRepository_AddTask(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
 	mock.ExpectExec(
@@ -108,7 +118,12 @@ func TestRepository_AddTask_Exec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
 	mock.ExpectExec(
@@ -139,7 +154,12 @@ func TestRepository_AddTask_LastInsert(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
 
 	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
 	mock.ExpectExec(
