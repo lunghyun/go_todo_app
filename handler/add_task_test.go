@@ -13,6 +13,7 @@ import (
 	"github.com/lunghyun/go_todo_app/testutil"
 )
 
+// TODO: AddTask: err case
 func TestAddTask(t *testing.T) {
 	type want struct {
 		status  int
@@ -38,7 +39,6 @@ func TestAddTask(t *testing.T) {
 		},
 	}
 	for n, tt := range tests {
-		//tt := tt
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 

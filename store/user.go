@@ -15,11 +15,11 @@ func (r *Repository) RegisterUser(ctx context.Context, db Execer, u *entity.User
 
 	sql := `INSERT INTO user(name, password, role, created, modified) VALUES (?, ?, ?, ?, ?)`
 	result, err := db.ExecContext(ctx, sql, u.Name, u.Password, u.Role, u.Created, u.Modified)
+	var mysqlErr *mysql.MySQLError
+	if errors.As(err, &mysqlErr) && mysqlErr.Number == ErrCodeMySQLDuplicateEntry {
+		return fmt.Errorf("cannot create same name user: %w", ErrAlreadyEntry)
+	}
 	if err != nil {
-		var mysqlErr *mysql.MySQLError
-		if errors.As(err, &mysqlErr) && mysqlErr.Number == ErrCodeMySQLDuplicateEntry {
-			return fmt.Errorf("cannot create same name user: %w", ErrAlreadyEntry)
-		}
 		return err
 	}
 	id, err := result.LastInsertId()

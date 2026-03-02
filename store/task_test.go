@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"errors"
+	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -34,6 +36,32 @@ func TestRepository_ListTasks(t *testing.T) {
 	}
 }
 
+func TestRepository_ListTasks_Select(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
+
+	sql := `SELECT id, title, status, created, modified FROM task`
+	mock.ExpectQuery(regexp.QuoteMeta(sql)).
+		WillReturnError(errors.New("select error"))
+
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{}
+	if _, err = r.ListTasks(ctx, xdb); err == nil {
+		t.Error("want error, got nil")
+	}
+}
+
 func TestRepository_AddTask(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -51,9 +79,16 @@ func TestRepository_AddTask(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { _ = db.Close() })
-	mock.ExpectExec( // 이스케이프 필요
-		`INSERT INTO task \(title, status, created, modified\) VALUES \(\?, \?, \?, \?\)`,
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
+
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
 	).WithArgs(okTask.Title, okTask.Status, okTask.Created, okTask.Modified).
 		WillReturnResult(sqlmock.NewResult(wantID, 1))
 
@@ -61,6 +96,81 @@ func TestRepository_AddTask(t *testing.T) {
 	r := &Repository{Clocker: c}
 	if err = r.AddTask(ctx, xdb, okTask); err != nil {
 		t.Errorf("want no error, but got %v", err)
+	}
+	if okTask.ID != entity.TaskID(wantID) {
+		t.Errorf("want ID %d, but got ID %d", wantID, okTask.ID)
+	}
+}
+
+func TestRepository_AddTask_Exec(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := clock.FixedClocker{}
+
+	errTask := &entity.Task{
+		Title:    "err task",
+		Status:   entity.TaskStatusTodo,
+		Created:  c.Now(),
+		Modified: c.Now(),
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
+
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
+	).WithArgs(errTask.Title, errTask.Status, errTask.Created, errTask.Modified).
+		WillReturnError(errors.New("db task"))
+
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{Clocker: c}
+	if err = r.AddTask(ctx, xdb, errTask); err == nil {
+		t.Errorf("want error, but got nil")
+	}
+}
+
+func TestRepository_AddTask_LastInsert(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := clock.FixedClocker{}
+
+	errTask := &entity.Task{
+		Title:    "err task",
+		Status:   entity.TaskStatusTodo,
+		Created:  c.Now(),
+		Modified: c.Now(),
+	}
+
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err = mock.ExpectationsWereMet(); err != nil {
+			t.Errorf("unfulfilled mock expectations: %v", err)
+		}
+		_ = db.Close()
+	})
+
+	sql := `INSERT INTO task (title, status, created, modified) VALUES (?, ?, ?, ?)`
+	mock.ExpectExec(
+		regexp.QuoteMeta(sql),
+	).WithArgs(errTask.Title, errTask.Status, errTask.Created, errTask.Modified).
+		WillReturnResult(sqlmock.NewErrorResult(errors.New("last insert id error")))
+
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{Clocker: c}
+	if err = r.AddTask(ctx, xdb, errTask); err == nil {
+		t.Error("want error, but got nil")
 	}
 }
 

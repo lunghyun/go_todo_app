@@ -2,11 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/lunghyun/go_todo_app/entity"
+	"github.com/lunghyun/go_todo_app/store"
 )
 
 type RegisterUser struct {
@@ -34,6 +36,12 @@ func (ru *RegisterUser) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, err := ru.Service.RegisterUser(ctx, body.Name, body.Password, body.Role)
+	if errors.Is(err, store.ErrAlreadyEntry) {
+		RespondJSON(ctx, w, &ErrResponse{
+			Message: http.StatusText(http.StatusConflict),
+		}, http.StatusConflict)
+		return
+	}
 	if err != nil {
 		log.Printf("RegisterUser failed: %+v ", err)
 		RespondJSON(ctx, w, &ErrResponse{
