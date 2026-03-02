@@ -13,6 +13,7 @@ import (
 	"github.com/lunghyun/go_todo_app/testutil"
 )
 
+// TODO: AddTask: err case
 func TestAddTask(t *testing.T) {
 	type want struct {
 		status  int

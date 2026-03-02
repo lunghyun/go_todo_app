@@ -12,6 +12,7 @@ import (
 	"github.com/lunghyun/go_todo_app/testutil"
 )
 
+// TODO: ListTasks: err case
 func TestRepository_ListTasks(t *testing.T) {
 	ctx := context.Background()
 	// entity.Task를 작성하느 다른 테스트 케이스와 섞이면 테스트 실패
@@ -34,6 +35,7 @@ func TestRepository_ListTasks(t *testing.T) {
 	}
 }
 
+// TODO: AddTask: err case
 func TestRepository_AddTask(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
