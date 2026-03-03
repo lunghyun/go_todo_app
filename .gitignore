@@ -32,3 +32,7 @@ go.work.sum
 .claude/
 tmp/
 # .vscode/
+
+# ssh key pair
+*.pem
+*.ppk
