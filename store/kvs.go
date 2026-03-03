@@ -32,7 +32,7 @@ func (k *KVS) Save(ctx context.Context, key string, UserID entity.UserID) error 
 func (k *KVS) Load(ctx context.Context, key string) (entity.UserID, error) {
 	id, err := k.Client.Get(ctx, key).Int64()
 	if err != nil {
-		return 0, fmt.Errorf("failed to get by %q: %w", key, err)
+		return 0, fmt.Errorf("failed to get by %q: %w", key, ErrNotFound)
 	}
 	return entity.UserID(id), nil
 }
